@@ -1,0 +1,30 @@
+var input = require('input');
+var dice = require('dice');
+var fireworks = require('fireworks');
+
+exports.guessTheNumber = function( player ){
+
+  var randomNumber = dice.roll(6);
+
+  var checkAnswer = function( guess, guesser, repeat ){
+
+    if ( guess == randomNumber ) {
+      guesser.sendMessage('You guessed correct!');
+
+    } else if ( guess == 'quit') {
+      guesser.sendMessage('Thanks for playing');
+
+    } else if ( guess < randomNumber ) {
+      guesser.sendMessage('Too low. Guess again');
+      repeat();
+
+    } else if ( guess > randomNumber ) {
+      guesser.sendMessage('Too high. Guess again');
+      repeat();
+
+    } 
+
+  };
+
+  input( player, 'Pick a number between 0 and 5', checkAnswer);
+};
