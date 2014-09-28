@@ -3,7 +3,7 @@ var fireworks = require('fireworks');
 function greetPlayer( event ) {
   var player = event.player;
   var message = greeting.random() + player.name;
-  player.sendMessage( message );
+  echo( player, message );
   fireworks.firework(player.location);
 };
-events.playerJoin( greetPlayer );
+events.connect( greetPlayer );

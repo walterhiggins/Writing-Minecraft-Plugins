@@ -1,6 +1,6 @@
 var greeting = require('greetings');
-events.playerJoin( function( event ) {
+events.connect( function( event ) {
   var player = event.player;
   var message = greeting.random() + player.name;
-  player.sendMessage( message );
+  echo ( player, message );
 } );

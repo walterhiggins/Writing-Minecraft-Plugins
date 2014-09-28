@@ -4,41 +4,37 @@ function onInput( animal, player ) {
   animal = animal.toLowerCase();
   switch (animal) { 
     case 'cat': 
-      player.sendMessage("A cat says 'meow'");
+      echo( player, "A cat says 'meow'");
       sounds.catMeow(player.location);
       break;
     case 'chicken':
-      player.sendMessage("A chicken says 'cluck'");
-      sounds.chickenIdle(player.location);
+      echo( player, "A chicken says 'cluck'");
+      sounds.chickenSay(player.location);
       break;
     case 'cow':
-      player.sendMessage("A cow says 'moo'");
-      sounds.cowIdle(player.location);
-      break;
-    case 'horse':
-      player.sendMessage("A horse says 'neigh'");
-      sounds.horseIdle(player.location);
+      echo( player, "A cow says 'moo'");
+      sounds.cowSay(player.location);
       break;
     case 'pig':
-      player.sendMessage("A pig says 'oink'");
-      sounds.pigIdle(player.location);
+      echo( player, "A pig says 'oink'");
+      sounds.pigSay(player.location);
       break;
     case 'sheep':
-      player.sendMessage("A sheep says 'baa'");
-      sounds.sheepIdle(player.location);
+      echo( player, "A sheep says 'baa'");
+      sounds.sheepSay(player.location);
       break;
     case 'wolf':
-      player.sendMessage("A wolf says 'woof'");
+      echo( player, "A wolf says 'woof'");
       sounds.wolfBark(player.location);
       break;
     default: 
-      player.sendMessage("I never heard of a " + animal);
+      echo( player, "I never heard of a " + animal);
   }
 }
 function animalSounds( player ) {
   input( player, 
          "What's your favorite animal" + 
-         " - cat, chicken, cow, horse, pig, sheep or wolf?", 
+         " - cat, chicken, cow, pig, sheep or wolf?", 
          onInput);
 }
 exports.animalSounds = animalSounds;

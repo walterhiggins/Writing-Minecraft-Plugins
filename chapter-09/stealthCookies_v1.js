@@ -4,9 +4,9 @@ function dropCookiesIfSneakingOrFlying(event){
   var breaker = event.player;
   var broken = event.block;
   
-  if ( breaker.sneaking || breaker.flying ) {
-    broken.world.dropItem( broken.location, items.cookie(2));
+  if ( breaker.sneaking || (! breaker.onGround ) ) {
+    broken.world.dropItem( broken.position, items.cookie(2));
   }
 }
-events.blockBreak( dropCookiesIfSneakingOrFlying );
+events.blockDestroy( dropCookiesIfSneakingOrFlying );
 		 
