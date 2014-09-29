@@ -1,15 +1,16 @@
 var playerSort = require('playerSort');
+var utils = require('utils');
 
 function jumps( sender ) {
-  var players = bukkit.players();
+  var players = utils.players();
   players.sort( playerSort.byJumps );
   players.reverse();
 
   for (var i = 0; i < players.length; i++ ) {
 
     var player = players[i];
-    var playerJumps = player.getStatistic(bukkit.stat.JUMP);
-    sender.sendMessage( player.name + '_____' + playerJumps);
+    var playerJumps = utils.stat( player, 'jump' );
+    echo( sender, player.name + '_____' + playerJumps);
 
   }
 

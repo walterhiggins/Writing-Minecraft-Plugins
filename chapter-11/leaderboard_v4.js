@@ -1,16 +1,16 @@
-
+var utils = require('utils');
 function jumps( sender ) {
-  var players = bukkit.players();
+  var players = utils.players();
 
   var i = 0;
   while ( i < players.length ) { // start of loop
 
     var player = players[i];
-    var jumpStats = player.getStatistic( bukkit.stat.JUMP );
+    var jumpStats = utils.stat( player, 'jump');
     if ( jumpStats == 0 ) {
       continue;
     }
-    sender.sendMessage( player.name + ' ' + jumpStats);
+    echo( sender, player.name + ' ' + jumpStats);
       
     i++;
   } // end of loop

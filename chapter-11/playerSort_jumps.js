@@ -1,6 +1,7 @@
+var utils = require('utils');
 function byJumps( a, b ) {
-  var aJumps = a.getStatistic( bukkit.stat.JUMP );
-  var bJumps = b.getStatistic( bukkit.stat.JUMP );
+  var aJumps = utils.stat( a, 'jump');
+  var bJumps = utils.stat( b, 'jump');
   return aJumps - bJumps;
 };
 exports.byJumps = byJumps;

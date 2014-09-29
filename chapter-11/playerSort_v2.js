@@ -11,7 +11,7 @@ function byName( a, b ) {
 exports.byName = byName;
 
 function byExp( a, b ) { 
-  return a.totalExperience - b.totalExperience;
+  return a.experience - b.experience;
 };
 
 exports.byExperience = byExp;
