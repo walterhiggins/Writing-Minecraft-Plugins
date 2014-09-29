@@ -15,4 +15,4 @@ function onChat( event ) {
                                          event.message );
   }
 }
-events.asyncPlayerChat( onChat );
+events.chat( onChat );
