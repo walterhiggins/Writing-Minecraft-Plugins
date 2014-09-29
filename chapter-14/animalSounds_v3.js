@@ -3,12 +3,11 @@ var input = require('input');
 
 var noises = {
   cat: sounds.catMeow,
-  chicken: sounds.chickIdle,
-  cow: sounds.cowIdle,
-  'ender dragon': sounds.enderDragonGrowl,
-  horse: sounds.horseIdle,
-  pig: sounds.pigIdle,
-  sheep: sounds.sheepIdle,
+  chicken: sounds.chickenSay,
+  cow: sounds.cowSay,
+  'ender dragon': sounds.enderdragonGrowl,
+  pig: sounds.pigSay,
+  sheep: sounds.sheepSay,
   wolf: sounds.wolfBark
 };
 function onInput( animal, player ) {
@@ -22,7 +21,7 @@ function onInput( animal, player ) {
 
   } else {
 
-    player.sendMessage("I never heard of a " + animal);
+    echo( player, "I never heard of a " + animal);
 
   }
 };
@@ -30,6 +29,6 @@ function onInput( animal, player ) {
 exports.animalSounds = function( player ) {
   input( player, 
          "What's your favorite animal" + 
-         " - cat, chicken, cow, horse, pig, sheep or wolf?", 
+         " - cat, chicken, cow, ender dragon, pig, sheep or wolf?",
          onInput );
 };
