@@ -1,24 +1,23 @@
 var items = require('items');
-var bkEnchantment = org.bukkit.enchantments.Enchantment;
-var bkShapedRecipe = org.bukkit.inventory.ShapedRecipe;
-
+var recipes = require('recipes');
+var cm = Packages.net.canarymod;
+var cmEnchantment = cm.api.inventory.Enchantment.Type;
+var itemFactory = cm.Canary.factory().itemFactory;
 var enderBow = items.bow(1);
-enderBow.addUnsafeEnchantment( bkEnchantment.LUCK, 3); 
+var luck = itemFactory.newEnchantment(cmEnchantment.LuckOfTheSea,3);
+enderBow.addEnchantments( [ luck ] );
 
-var enderBowRecipe = new bkShapedRecipe( enderBow );
+var enderBowRecipe = { 
+  result: enderBow,
+  ingredients: { 
+    E: items.enderPearl(1), 
+    S: items.stick(1), 
+    W: items.string(1) 
+  },
+  shape: [ 'ESW',
+           'SEW',
+           'ESW' ]
+};
 
-// E = ender pearl
-// S = stick
-// W = thread (string)
+recipes.add( enderBowRecipe );
 
-enderBowRecipe.shape([
-  "ESW", 
-  "SEW", 
-  "ESW"
-]);
-
-enderBowRecipe.setIngredient('E', items.enderPearl());
-enderBowRecipe.setIngredient('S', items.stick());
-enderBowRecipe.setIngredient('W', items.string());
-
-server.addRecipe(enderBowRecipe);
