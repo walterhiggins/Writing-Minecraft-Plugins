@@ -1,31 +1,35 @@
 var items = require('items');
-var bkEnchantment = org.bukkit.enchantments.Enchantment;
-var bkArrow = org.bukkit.entity.Arrow;
-var bkPlayer = org.bukkit.entity.Player;
+var cm = Packages.net.canarymod;
+var cmEnchantment = cm.api.inventory.Enchantment.Type;
+var cmArrow = cm.api.entity.Arrow;
+var cmPlayer = cm.api.entity.living.humanoid.Player;
 
 function onArrowHit( event ) {
-  var projectile = event.getEntity();
-  if (! (projectile instanceof bkArrow) ) {
+  var projectile = event.getProjectile();
+  if (! (projectile instanceof cmArrow) ) {
     return; 
   }
-  var shooter = projectile.getShooter();
-  if (! (shooter instanceof bkPlayer) ) {
+  var shooter = projectile.getOwner();
+  if (! (shooter instanceof cmPlayer) ) {
     return;
   }
-  var itemInHand = shooter.getItemInHand();
+  var itemInHand = shooter.getItemHeld();
   var arrowLocation = projectile.getLocation();
   if ( isEnderBow( itemInHand ) ) {
-    projectile.remove();
-    shooter.teleport( arrowLocation );
+    projectile.destroy();
+    shooter.teleportTo( arrowLocation );
   }
 }
 events.projectileHit( onArrowHit );
 
 function isEnderBow( item ){
-  if (item && 
-      (item.getType() == items.bow()) &&
-      item.getEnchantmentLevel(bkEnchantment.LUCK) == 3){
-    return true;
+  if (item && ( item.getType() == items.bow() ) ) {
+    var enchantment = item.getEnchantment();
+    if (enchantment && 
+	enchantment.getLevel() == 3 && 
+	enchantment.getType() == cmEnchantment.LuckOfTheSea){
+      return true;
+    }
   }
   return false;
 }
