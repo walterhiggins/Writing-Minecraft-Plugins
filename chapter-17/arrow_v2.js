@@ -1,6 +1,7 @@
 var items = require('items');
 var bkEnchantment = org.bukkit.enchantments.Enchantment;
 var bkArrow = org.bukkit.entity.Arrow;
+var bkPlayer = org.bukkit.entity.Player;
 
 function onArrowHit( event ) {
   var projectile = event.entity;
@@ -12,6 +13,7 @@ function onArrowHit( event ) {
     return;
   }
   var itemInHand = shooter.itemInHand;
+
   if ( isEnderBow( itemInHand ) ) {
     projectile.remove();
     shooter.teleport( projectile.location );
@@ -27,4 +29,3 @@ function isEnderBow( item ){
   }
   return false;
 }
-

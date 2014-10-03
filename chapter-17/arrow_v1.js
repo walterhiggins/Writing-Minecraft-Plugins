@@ -29,4 +29,3 @@ function isEnderBow( item ){
   }
   return false;
 }
-
