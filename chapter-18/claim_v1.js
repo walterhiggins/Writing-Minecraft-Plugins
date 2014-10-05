@@ -6,12 +6,12 @@ function claim( params, player ){
     player.location
   );
   if ( existingClaim ) {
-    player.sendMessage('You already have plot number ' + 
-                       existingClaim.number);
+    echo( player, 'You already have plot number ' + 
+          existingClaim.number);
     return;
   }
   if (boundingPlots.length == 0){
-    player.sendMessage('You are not in a plot!');
+    echo( player, 'You are not in a plot!');
     return;
   }
   for (var i = 0;i < boundingPlots.length;i++){
@@ -20,7 +20,7 @@ function claim( params, player ){
       // convert from Java to JavaScript string
       plot.claimedBy = '' + player.name; 
 
-      player.sendMessage(
+      echo( player, 
         'Congratulations! You now own plot ' 
         + plot.number
       );
@@ -28,6 +28,6 @@ function claim( params, player ){
       return;
     }
   }
-  player.sendMessage('No available plots!');
+  echo( player, 'No available plots!');
 }
 command(claim);

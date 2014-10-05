@@ -1,26 +1,26 @@
 var zones = require('protection/zones');
 
 function onPlace( event ) {
-  if (event.player.op){
+  if ( isOp(event.player) ) {
     return;
   }
-  var boundingZones = zones.getBoundingZones(
-    event.blockPlaced.location);
+  var block = event.blockPlaced;
+  var boundingZones = zones.getBoundingZones(block.location);
   if (boundingZones.length == 0){
     return;
   }
-  event.cancelled = true;
+  event.setCanceled();
 }
 function onBreak( event ){
-  if (event.player.op){
+  if ( isOp(event.player) ) {
     return;
   }
-  var boundingZones = zones.getBoundingZones(
-    event.block.location);
+  var block = event.block;
+  var boundingZones = zones.getBoundingZones(block.location);
   if (boundingZones.length == 0){
     return;
   }
-  event.cancelled = true;
+  event.setCanceled();
 }
 events.blockPlace( onPlace );
-events.blockBreak( onBreak );
+events.blockDestroy( onBreak );

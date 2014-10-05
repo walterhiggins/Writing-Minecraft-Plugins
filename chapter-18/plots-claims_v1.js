@@ -11,7 +11,7 @@ function claim( player, plotNumber) {
     if (plot.number == plotNumber){
       // is the plot already claimed by another?
       if (plot.claimedBy){
-        player.sendMessage('This plot is already claimed');
+        echo( player, 'This plot is already claimed');
         return null;
       } else { 
         plot.claimedBy = player.name;
