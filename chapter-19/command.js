@@ -1,17 +1,18 @@
 var region = require('protection/region');  
 var fireworks = require('fireworks');
-var bkTeleportCause = org.bukkit.event.player
-  .PlayerTeleportEvent.TeleportCause;
-var bkLocation = org.bukkit.Location;
+var utils = require('utils');
+var cm = Packages.net.canarymod;
+var cmLocation = cm.api.world.position.Location;
 var game = require('./game');
 var arenas = persist('snowball-arenas', []);
 
 function snowball( params, sender ){
+  var duration = 60; // seconds
   var i;
   var arena = null;
   var gameOn = false;
 
-  var allPlayers = bukkit.players();
+  var allPlayers = utils.players();
   var player;
   var teams = {red: [], blue:[], yellow:[]};
   var spawns = [];
@@ -29,40 +30,35 @@ function snowball( params, sender ){
     } 
   }
   if (!gameOn){
-    sender.sendMessage(
-      'You must issue this command while in a colored zone'
-    );
+    echo( sender, 
+	  'You must issue this command while in a colored zone' );
     return;
   }
 
   for (i = 0;i < allPlayers.length; i++) {
     player = allPlayers[i];
+    var playerLoc = player.location;
     inZone = false;
-    if (
-      region.contains( arena.redZone, player.location) 
-    ) {
+    if (region.contains( arena.redZone, playerLoc) ) {
       teams.red.push( player.name );
       inZone = arena.redSpawn;
-    } 
-    else if (
-      region.contains( arena.blueZone, player.location) 
-    ) {
+    } else if ( region.contains( arena.blueZone, playerLoc) ) {
       teams.blue.push( player.name );
       inZone = arena.blueSpawn;
-    } else if (
-      region.contains( arena.yellowZone, player.location) 
-    ) {
+    } else if ( region.contains( arena.yellowZone, playerLoc) ) {
       teams.yellow.push( player.name );
       inZone = arena.yellowSpawn;
     } 
     if ( inZone ) {
-      var spawnLoc = new bkLocation( player.location.world, 
+      var spawnLoc = new cmLocation( playerLoc.world, 
                                      inZone.x, 
                                      inZone.y, 
-                                     inZone.z);
+                                     inZone.z, 
+				     0, 
+				     0);
       spawns.push( {
         participant: player,
-        oldLocation: player.location,
+        oldLocation: playerLoc,
         newLocation: spawnLoc 
       } );
     }
@@ -71,29 +67,28 @@ function snowball( params, sender ){
       || (teams.red.length == 0 && teams.yellow.length == 0)
       || (teams.blue.length == 0 && teams.yellow.length == 0)
      ) {
-    sender.sendMessage(
+    echo( sender, 
       'Need more than one team to play. ' + 
       'Someone needs to choose a different color.');
     return;
   }
-  function returnPlayers() {
+  function returnPlayers( gameData, winningTeam) {
     var spawn;
     for (var i = 0;i < spawns.length; i++) { 
       spawn = spawns[i];
-      spawn.participant.teleport(spawn.oldLocation, 
-                                 bkTeleportCause.PLUGIN);
-      fireworks.firework( spawn.oldLocation );
+      var player = spawn.participant;
+      player.teleportTo(spawn.oldLocation);
+      if (gameData.teams[winningTeam].indexOf( '' + player.name) > -1) {
+	fireworks.firework( spawn.oldLocation );
+      }
     }
   }
 
   for (i = 0;i < spawns.length; i++) { 
     spawn = spawns[i];
-    spawn.participant.teleport(spawn.newLocation, 
-                               bkTeleportCause.PLUGIN);
+    spawn.participant.teleportTo(spawn.newLocation);
   }
-  setTimeout(returnPlayers, 65000);
-  
-  game.SnowballFight(60, teams);
+  game.start(duration, teams, returnPlayers);
 }
 
 command( snowball );

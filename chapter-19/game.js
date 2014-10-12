@@ -1,21 +1,22 @@
 var items = require('items');
-var textcolors = require('textcolors');
-var bkGameMode = org.bukkit.GameMode;
-var bkSnowball = org.bukkit.entity.Snowball;
-var bkDisplaySlot = org.bukkit.scoreboard.DisplaySlot;
+var utils = require('utils');
+var scoreboard = require('minigames/scoreboard');
+var cm = Packages.net.canarymod;
+var cmSnowball = cm.api.entity.EntityType.SNOWBALL;
+var cmCreative = cm.api.GameMode.CREATIVE;
 
-function SnowballFight( duration, teams ) {
+function start( duration, teams, onGameOver ) {
   var players;
   var i;
   var game;
   var teamName;
-
+  var ball;
   if ( typeof duration == 'undefined' ) {
     duration = 60;
   }
   if ( typeof teams == 'undefined' ) {
     teams =  {};
-    players = server.onlinePlayers;
+    players = utils.players(); 
     var teamNames = ['red','blue','yellow'];
     var playerCount = players.length;
     for ( i = 0; i < playerCount; i++ ) {
@@ -32,26 +33,31 @@ function SnowballFight( duration, teams ) {
     duration: duration,
     teamScores: {},
     eventListener: null,
-    savedModes: {},
-    snowballs: [ items.snowBall( 64 ) ]
+    onGameOver: onGameOver
   };
 
   function loop(){
     if ( game.duration-- ){
-      game.objective.displayName = 'Snowball '+game.duration;
       updateScoreboard( game );
       setTimeout( loop, 1000 );
     } else {
       end( game );
     }
   }
+
   function onSnowballHit( event ) {
-    var snowball = event.damager;
-    if ( !snowball || !( snowball instanceof bkSnowball ) ) {
+    var snowball = event.projectile;
+    if (snowball.entityType != cmSnowball ){
       return;
     }
-    var thrower = snowball.shooter;
-    var damaged = event.entity;
+    var thrower = snowball.thrower;
+    //var thrower = snowball.handle.j().getCanaryEntity();
+
+    var damaged = event.entityHit;
+    if (damaged == null){
+      // snowball did not hit another player
+      return;
+    }
     var throwerTeam = getPlayerTeam( thrower, game.teams );
     var damagedTeam = getPlayerTeam( damaged, game.teams );
 
@@ -63,122 +69,71 @@ function SnowballFight( duration, teams ) {
     } else {
       game.teamScores[ throwerTeam ]--;
     }
-  }
+  } // end onSnowballHit
 
-  start( game );
-  game.eventListener = events.entityDamageByEntity( 
-    onSnowballHit 
-  );
-  setTimeout(loop, 1000);
-}
-
-function start( game ) {
-  var i;
-  var teamName;
-  var team;
-  var player;
-
-  /*
-   Initialize the scoreboard
-   */
-  var scoreboard = server.scoreboardManager
-    .getNewScoreboard();
-  var objective = scoreboard
-    .registerNewObjective('win','dummy');
-  objective.displayName = ('Snowball ' + game.duration)
-    .underline().bold();
-  objective.displaySlot = bkDisplaySlot.SIDEBAR;
-  game.objective = objective;
-
-  /*
-   put all players in survival mode and give them each 64 
-   snowballs for every 20 seconds of play
-   */
-  for ( i = 0; i < game.duration; i += 20 ) {
-    game.snowballs.push( game.snowballs[ 0 ] );
-  }
+  scoreboard.create('snowball', 'Snowball Fight!');
+  ball = items.snowBall(1);
   
   for ( teamName in game.teams ) {
 
-    game.teamScores[ teamName ] = -1;
+    scoreboard.addTeam( teamName, teamName );
+
+    game.teamScores[ teamName ] = 0;
     team = game.teams[ teamName ];
 
-    var sbTeam = scoreboard.registerNewTeam( teamName );
-    sbTeam.prefix = textcolors.colorize(teamName, '');
     for ( i = 0; i < team.length; i++ ) {
-
+      scoreboard.addPlayerToTeam( 'snowball', teamName, team[i]);
       player = server.getPlayer( team[i] );
-      game.savedModes[ player.name ] = player.gameMode;
-      player.gameMode = bkGameMode.SURVIVAL;
-      player.inventory.addItem( game.snowballs );
-      player.scoreboard = scoreboard;
-
-      sbTeam.addPlayer( player );
+      player.mode = cmCreative;
+      player.inventory.addItem( ball.type.id, ball.amount, 0 );
     }
-
   }
   updateScoreboard(game);
-  /*
-   due to a bug in Scoreboard, we need to force a refresh 
-   by changing the score from -1 to 0
-   */
-  for ( teamName in game.teams ) {
-    game.teamScores[ teamName ] = 0;
-  }
-  updateScoreboard(game);
+  game.eventListener = events.projectileHit( onSnowballHit );
+  setTimeout(loop, 1000);
 }
 
 function updateScoreboard( game ) {
+  var teamName;
   var team;
   var teamScore;
-  for (team in game.teamScores){
-    teamScore = game.objective.getScore( team );
-    teamScore.score = game.teamScores[ team ];
+  var i;
+
+  for (teamName in game.teamScores) {
+    teamScore = game.teamScores[ teamName ];
+    team = game.teams[ teamName ];
+    for (i = 0;i < team.length; i++){
+      scoreboard.updateScore( 'snowball', team[i], teamScore);
+    }
   }
 }
 
 function end( game ) {
-  var scores = [];
-  var i;
   var teamName;
-  var team;
-  var player;
-  var scoreboard = server.scoreboardManager
-    .getMainScoreboard();
-  var players = [];
-
-  function resetScoreboard(){
-    var i;
-    for ( i = 0; i < players.length; i++ ) {
-      players[i].scoreboard = scoreboard;
-    }
-    game.objective.unregister();
-  }
+  scoreboard.remove('snowball');
+  var winningTeam;
+  var highestScore = 0;
   for ( teamName in game.teams ) {
-    team = game.teams[teamName];
-    for ( i = 0; i < team.length; i++ ) {
-      /* 
-       restore player's previous game mode 
-       and take back snowballs
-       */
-      player = server.getPlayer( team[i] );
-      player.gameMode = game.savedModes[ player.name ];
-      player.inventory.removeItem( game.snowballs );
-      players.push(player);
+    if (game.teamScores[teamName] > highestScore){
+      highestScore = game.teamScores[teamName];
+      winningTeam = teamName;
     }
+    scoreboard.removeTeam( teamName );
   }
+  server.broadcastMessage('The ' + winningTeam + ' team won!');
   game.eventListener.unregister();
-  game.objective.displayName = 'GAME OVER';
-  /*
-   display scoreboard for 5 seconds after game ends
-   */
-  setTimeout(resetScoreboard, 5000);
+  // who won?
+  
+  game.onGameOver( game, winningTeam );
 }
 
 function getPlayerTeam( player, teams ) {
   var teamName;
   var team;
   var i;
+  if ( !player ) {
+    return null;
+  }
   for ( teamName in teams ) {
     team = teams[ teamName ];
     for ( i = 0; i < team.length; i++ ) {
@@ -190,4 +145,4 @@ function getPlayerTeam( player, teams ) {
   return null;
 }
 
-exports.SnowballFight = SnowballFight;
+exports.start = start;
