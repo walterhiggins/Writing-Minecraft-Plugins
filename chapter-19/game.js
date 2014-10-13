@@ -122,8 +122,6 @@ function end( game ) {
   }
   server.broadcastMessage('The ' + winningTeam + ' team won!');
   game.eventListener.unregister();
-  // who won?
-  
   game.onGameOver( game, winningTeam );
 }
 
