@@ -2,13 +2,15 @@ var items = require('items');
 var recipes = require('recipes');
 var cm = Packages.net.canarymod;
 var cmEnchantment = cm.api.inventory.Enchantment.Type;
-var itemFactory = cm.Canary.factory().itemFactory;
-var enderBow = items.bow(1);
-var luck = itemFactory.newEnchantment(cmEnchantment.LuckOfTheSea,3);
-enderBow.addEnchantments( [ luck ] );
+var cmItemFactory = cm.Canary.factory().itemFactory;
+var cmEnderBow, cmLuck;
+
+cmEnderBow = items.bow(1);
+cmLuck = cmItemFactory.newEnchantment(cmEnchantment.LuckOfTheSea,3);
+cmEnderBow.addEnchantments( [ cmLuck ] );
 
 var enderBowRecipe = { 
-  result: enderBow,
+  result: cmEnderBow,
   ingredients: { 
     E: items.enderPearl(1), 
     S: items.stick(1), 
@@ -19,5 +21,5 @@ var enderBowRecipe = {
            'ESW' ]
 };
 
-recipes.add( enderBowRecipe );
-
+var recipe = recipes.create( enderBowRecipe );
+server.addRecipe( recipe );
