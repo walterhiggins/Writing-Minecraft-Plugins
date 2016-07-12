@@ -19,7 +19,7 @@ function snowball( params, sender ){
   var spawn = null;
 // use local arenas object reference from arenas.js, rather than creating another global one. Seemed to cause issues when it was global.
   var aplugin = require('./arena');
-  var arenas = aplugin.getArena();
+  var arenas = aplugin.getArenas();
 
   for ( i = 0; i < arenas.length; i++ ) {
     arena = arenas[i];
