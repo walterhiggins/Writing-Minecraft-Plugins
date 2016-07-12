@@ -8,6 +8,10 @@ var instructions = [
   '/jsp snowball'
 ];
 
+// Added reference to prevent persist() object thrashing when called externally
+function getArenas() {
+  return arenas;
+
 function snowballArena() {
   var arena = {};
   
@@ -67,4 +71,5 @@ function snowballArena() {
 
 Drone.extend( snowballArena );
 
+exports.getArenas = getArenas;
 
