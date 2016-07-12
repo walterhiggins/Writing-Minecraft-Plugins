@@ -9,7 +9,7 @@ var instructions = [
 ];
 
 // Added reference to prevent persist() object thrashing when called externally
-function getArena() {
+function getArenas() {
   return arenas;
 
 function snowballArena() {
@@ -71,5 +71,5 @@ function snowballArena() {
 
 Drone.extend( snowballArena );
 
-exports.getArena = getArena;
+exports.getArenas = getArenas;
 
