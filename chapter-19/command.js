@@ -4,7 +4,7 @@ var utils = require('utils');
 var cm = Packages.net.canarymod;
 var cmLocation = cm.api.world.position.Location;
 var game = require('./game');
-var arenas = persist('snowball-arenas', []);
+
 
 function snowball( params, sender ){
   var duration = 60; // seconds
@@ -17,6 +17,9 @@ function snowball( params, sender ){
   var teams = {red: [], blue:[], yellow:[]};
   var spawns = [];
   var spawn = null;
+// use local arenas object reference from arenas.js, rather than creating another global one. Seemed to cause issues when it was global.
+  var aplugin = require('./arena');
+  var arenas = aplugin.getArena();
 
   for ( i = 0; i < arenas.length; i++ ) {
     arena = arenas[i];
